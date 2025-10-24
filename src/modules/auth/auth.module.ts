@@ -1,16 +1,23 @@
-
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { OtpModel } from 'src/DB/models/Otp.model';
+import {
+  OtpRepository
+} from 'src/DB/repository';
+import { confirmEmailOtpService } from 'src/common/utils/Email/newConfirmOtp.email';
 import { AuthController } from './auth.controller';
-import { User, UserSchema } from 'src/DB/models/User.model';
 import { AuthService } from './auth.service';
-import { UserRepository } from 'src/DB/repository';
-import { Token, TokenSchema } from 'src/DB/models/Token.model';
-
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }])],
+  imports: [ OtpModel],
   controllers: [AuthController],
-  providers: [AuthService,UserRepository],
+  providers: [
+    AuthService,
+    
+    confirmEmailOtpService,
+    OtpRepository,
+  
+    
+
+  ],
 })
-export class AuthModule {}
+export class AuthenticationModule {}

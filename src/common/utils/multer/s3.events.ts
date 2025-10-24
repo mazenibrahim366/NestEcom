@@ -1,13 +1,13 @@
 import EventEmitter from 'node:events'
-import { User, UserSchema } from '../../DB/models/User.model'
-import { UserRepository } from '../../DB/repository/user.repository'
+import { User, UserModel } from '../../../DB/models/User.model'
+import { UserRepository } from '../../../DB/repository/user.repository'
 import { getFile } from './s3.config'
 import mongoose from 'mongoose'
 
 export const s3Event = new EventEmitter()
 s3Event.on('trackFileUpload', (data) => {
   setTimeout(async () => {
-    const userModel = new UserRepository(mongoose.model(User.name, UserSchema)as any);;
+    const userModel = new UserRepository(UserModel as any );;
     try {
       await userModel.updateOne({
         filter: { _id: data.userId },

@@ -88,7 +88,10 @@ export class IForgetPasswordBodyInputs {
   otp: string;
   @IsStrongPassword()
   password: string;
-
+  @IsMatched<string>(['password'], {
+    message: 'password mismatched confirmation password',
+  })
+confirmPassword:string
 
 }
 export class INewConfirmEmailBodyInputs {

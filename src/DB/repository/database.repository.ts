@@ -9,7 +9,7 @@ import {
   UpdateQuery,
 } from 'mongoose';
 
-export class DatabaseRepository<TDocument> {
+export  class DatabaseRepository<TDocument> {
   constructor(protected readonly model: Model<TDocument>) {}
 
   async findOne({

@@ -8,9 +8,9 @@ import {
   QueryOptions,
 } from 'mongoose';
 
-import { decryptEncryption } from '../../utils/security/encryption.security';
 import { IUserDocument as TDocument, User } from '../models/User.model';
 import { DatabaseRepository } from './database.repository';
+import { decryptEncryption } from 'src/common/utils/security/encryption.security';
 @Injectable()
 export class UserRepository extends DatabaseRepository<TDocument> {
   constructor(

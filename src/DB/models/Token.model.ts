@@ -1,4 +1,4 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export type ITokenDocument = HydratedDocument<Token>;
@@ -16,5 +16,6 @@ export class Token {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User',required:true })
   userId?: Types.ObjectId;
 }
-export const TokenSchema = SchemaFactory.createForClass(Token);
+ const TokenSchema = SchemaFactory.createForClass(Token);
 
+ export const TokenModel =  MongooseModule.forFeature([{ name:Token.name, schema:TokenSchema }])
