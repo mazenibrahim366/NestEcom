@@ -10,7 +10,6 @@ import {
 } from 'class-validator';
 import { IsMatched } from 'src/common/decorators';
 
-
 export interface ValidationPipeOptions extends ValidatorOptions {
   transform?: boolean;
   disableErrorMessages?: boolean;
@@ -39,8 +38,7 @@ export class ISignupBodyInputs {
 
 export class ISignupByGmailBodyInputs {
   @IsString()
-  
- idToken:string
+  idToken: string;
 }
 
 export class ILoginBodyInputs {
@@ -52,37 +50,26 @@ export class ILoginBodyInputs {
 
 export class ILoginByGmailBodyInputs {
   @IsString()
-  
- idToken:string
+  idToken: string;
 }
-
 
 export class IConfirmEmailBodyInputs {
-
   @IsEmail()
-  email: string
+  email: string;
   @IsString()
   @Length(6, 6)
   otp: string;
-
-
-
 }
 export class IVerifyConfirmEmailBodyInputs {
-
   @IsEmail()
-  email: string
+  email: string;
   @IsString()
   @Length(6, 6)
   otp: string;
-
-
-
 }
 export class IForgetPasswordBodyInputs {
-
   @IsEmail()
-  email: string
+  email: string;
   @IsString()
   @Length(6, 6)
   otp: string;
@@ -91,15 +78,9 @@ export class IForgetPasswordBodyInputs {
   @IsMatched<string>(['password'], {
     message: 'password mismatched confirmation password',
   })
-confirmPassword:string
-
+  confirmPassword: string;
 }
 export class INewConfirmEmailBodyInputs {
-
   @IsEmail()
-  email: string
-
-
-
-
+  email: string;
 }

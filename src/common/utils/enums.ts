@@ -33,3 +33,14 @@ export enum LanguageEnum {
   AR = 'AR',
   EN = 'EN',
 }
+
+export enum StorageEnum {
+  memory = 'memory',
+  disk = 'disk',
+}
+export enum FolderEnum {
+  brand = 'brands',
+  category = 'category',
+  product = 'product',
+}
+

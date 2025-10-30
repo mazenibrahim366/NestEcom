@@ -1,15 +1,16 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
+import { IOtp } from 'src/common/interfaces/otp.interface';
 import { emailEvent } from 'src/common/utils/Email/email.events';
 import { OtpEnum } from 'src/common/utils/enums';
 import { generateHash } from 'src/common/utils/security/hash.security';
 
-export type IOtpDocument = HydratedDocument<Otp>;
+export type OtpDocument = HydratedDocument<Otp>;
 
 @Schema({
   timestamps: true,
 })
-export class Otp {
+export class Otp implements IOtp{
   @Prop({ type: String, required: true, unique: true })
   code: string;
 
@@ -38,7 +39,7 @@ OtpSchema.index({ expiredAt: 1 }, { expireAfterSeconds: 0 });
 OtpSchema.pre(
   'save',
   async function (
-    this: IOtpDocument & {
+    this: OtpDocument & {
       wasNew: boolean;
       confirmPasswordPlanOtp?: string | undefined;
     },
@@ -56,11 +57,11 @@ OtpSchema.pre(
   },
 );
 OtpSchema.post('save', async function (doc, next) {
-  const that = this as unknown as IOtpDocument & {
+  const that = this as unknown as OtpDocument & {
     wasNew: boolean;
     confirmPasswordPlanOtp?: string | undefined;
   };
-  
+
   // console.log(that.wasNew)
   if (that.wasNew && that.confirmPasswordPlanOtp) {
     emailEvent.emit('sendConfirmEmail', [

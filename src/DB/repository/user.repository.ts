@@ -8,7 +8,7 @@ import {
   QueryOptions,
 } from 'mongoose';
 
-import { IUserDocument as TDocument, User } from '../models/User.model';
+import { UserDocument as TDocument, User } from '../models/User.model';
 import { DatabaseRepository } from './database.repository';
 import { decryptEncryption } from 'src/common/utils/security/encryption.security';
 @Injectable()
@@ -44,8 +44,8 @@ export class UserRepository extends DatabaseRepository<TDocument> {
     select?: string;
     option?: QueryOptions;
   }): Promise<TDocument[] | unknown> {
-    let users = [] as any;
-    let cursor = this.model
+    const users = [] as any;
+    const cursor = this.model
       .find(filter)
       .select(select)
       .populate(option?.populate as PopulateOptions)

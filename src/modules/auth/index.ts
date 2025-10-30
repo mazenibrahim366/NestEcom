@@ -1,1 +1,1 @@
-// export { default as router} from "./auth.controller"
+export * from "./entities/auth.entity";

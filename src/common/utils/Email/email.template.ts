@@ -1,6 +1,5 @@
-export const emailTemplate =async ( otp :string|number ) => {
-
-    return `<!DOCTYPE html>
+export const emailTemplate = async (otp: string | number) => {
+  return `<!DOCTYPE html>
                 <html>
                 <head>
                     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></head>
@@ -85,6 +84,5 @@ export const emailTemplate =async ( otp :string|number ) => {
                 </tr>
                 </table>
                 </body>
-                </html>`
-    
-}
+                </html>`;
+};

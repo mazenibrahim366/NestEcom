@@ -1,5 +1,10 @@
-
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor, RequestTimeoutException } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, tap, timeout } from 'rxjs/operators';
 
@@ -9,17 +14,16 @@ export class LoggingInterceptor implements NestInterceptor {
     console.log('Before...');
 
     const now = Date.now();
-    return next
-      .handle()
-      .pipe(
-        timeout(10000),
-       
-         catchError(err => {
+    return next.handle().pipe(
+      timeout(10000),
+
+      catchError((err) => {
         if (err instanceof TimeoutError) {
           return throwError(() => new RequestTimeoutException());
         }
         return throwError(() => err);
-      }), tap(() => console.log(`After... ${Date.now() - now}ms`)),
-      );
+      }),
+      tap(() => console.log(`After... ${Date.now() - now}ms`)),
+    );
   }
 }

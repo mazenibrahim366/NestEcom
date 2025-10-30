@@ -1,4 +1,3 @@
-import { Otp } from './../../DB/models/Otp.model';
 import { customAlphabet } from 'nanoid';
 
 import {
@@ -9,7 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
-import { IUserDocument } from 'src/DB/models/User.model';
+import { UserDocument } from 'src/DB/models/User.model';
 import { OtpRepository, UserRepository } from '../../DB/repository/';
 
 import { log } from 'console';
@@ -22,6 +21,7 @@ import {
   generateHash,
 } from '../../common/utils/security/hash.security';
 
+import { TokenService } from 'src/common/utils/security/token.security';
 import {
   IConfirmEmailBodyInputs,
   IForgetPasswordBodyInputs,
@@ -32,7 +32,7 @@ import {
   ISignupByGmailBodyInputs,
   IVerifyConfirmEmailBodyInputs,
 } from './dto/auth.dto';
-import { TokenService } from 'src/common/utils/security/token.security';
+import { LoginResponse } from './entities/auth.entity';
 
 async function verify(idToken: string) {
   const client = new OAuth2Client();
@@ -77,13 +77,9 @@ export class AuthService {
           confirmEmail: Date.now() as unknown as Date,
         },
       ],
-    })) as IUserDocument[];
+    })) as UserDocument[];
 
-    return {
-      statusCode: 201,
-      // data: process.env.MOOD === 'development' ? { signupUser } : {},
-      data: { signupUser },
-    };
+    return;
   };
   loginByGmail = async (body: ILoginByGmailBodyInputs) => {
     const { idToken } = body;
@@ -101,13 +97,14 @@ export class AuthService {
     }
     const data = await this.tokenService.generateLoginToken(user);
 
-    return {
-      status: 201,
-      data: process.env.MOOD === 'development' ? { data } : {},
-    };
+    return 
+    // {
+      // status: 201,
+      // data: process.env.MOOD === 'development' ? { data } : {},
+    // };
   };
   signup = async (body: ISignupBodyInputs) => {
-    let dateExpired = new Date(Date.now() + 2 * 60 * 1000);
+    const dateExpired = new Date(Date.now() + 2 * 60 * 1000);
     const { fullName, email, password, phone } = body;
 
     const encPhone = await encryptEncryption({ message: phone });
@@ -132,7 +129,7 @@ export class AuthService {
           otpAttempts: { bannedUntil: null as any, count: 0 },
         },
       ],
-    })) as IUserDocument[];
+    })) as UserDocument[];
     await this.otpModel.create({
       data: [
         {
@@ -147,13 +144,14 @@ export class AuthService {
       ],
     });
 
-    return {
-      status: 201,
-      data: process.env.MOOD === 'development' ? { signupUser } : {},
-    };
+    return 
+    // {
+    //   status: 201,
+    //   data: process.env.MOOD === 'development' ? { signupUser } : {},
+    // };
   };
 
-  login = async (body: ILoginBodyInputs) => {
+  login = async (body: ILoginBodyInputs):Promise<LoginResponse>  => {
     const { email, password } = body;
     const user = await this.UserModel.findOne({
       filter: { email, provider: providerEnum.system },
@@ -174,12 +172,12 @@ export class AuthService {
     ) {
       throw new NotFoundException('In-valid login data');
     }
-    const data = await  this.tokenService.generateLoginToken(user);
-    return { status: 200, data };
+    const data = await this.tokenService.generateLoginToken(user);
+    return { data };
   };
   confirmEmail = async (body: IConfirmEmailBodyInputs) => {
     const { email, otp } = body;
-    const user: IUserDocument | null = await this.UserModel.findOne({
+    const user: UserDocument | null = await this.UserModel.findOne({
       filter: {
         email,
         provider: providerEnum.system,
@@ -228,7 +226,7 @@ export class AuthService {
       },
     });
 
-    return { message: 'Done' };
+    return ;
   };
   newConfirmEmail = async (body: INewConfirmEmailBodyInputs) => {
     const { email } = body;
@@ -246,12 +244,12 @@ export class AuthService {
       email,
       subject: 'Confirm Password',
     });
-    return { message: 'Done' };
+    return ;
   };
   verifyForgotPassword = async (body: IVerifyConfirmEmailBodyInputs) => {
     const { email, otp } = body;
 
-    const user: IUserDocument | null = await this.UserModel.findOne({
+    const user: UserDocument | null = await this.UserModel.findOne({
       filter: {
         email,
         provider: providerEnum.system,
@@ -259,7 +257,13 @@ export class AuthService {
         deletedAt: { $exists: false },
       },
       option: {
-        populate: { path: 'otp', match: { type: OtpEnum.resetPassword  ,expiredAt: { $gt: new Date() }} },
+        populate: {
+          path: 'otp',
+          match: {
+            type: OtpEnum.resetPassword,
+            expiredAt: { $gt: new Date() },
+          },
+        },
       },
     });
 
@@ -311,11 +315,11 @@ export class AuthService {
         hashValue: user.otp[0].code,
       }),
     );
-   
-    log({ inputOtp:otp, storedOtp: user?.otp[0].code });
+
+    log({ inputOtp: otp, storedOtp: user?.otp[0].code });
     if (!user.otp?.length || !user.otp[0]?.code) {
-  throw new NotFoundException('OTP not found or expired');
-}
+      throw new NotFoundException('OTP not found or expired');
+    }
     // if (
 
     //   !(await compareHash({
@@ -326,7 +330,6 @@ export class AuthService {
     //   throw new BadRequestException('In-valid OTP');
     // }
     if (
-
       !(await compareHash({
         plainText: otp,
         hashValue: user.otp[0].code,
@@ -334,12 +337,12 @@ export class AuthService {
     ) {
       throw new BadRequestException('In-valid OTP');
     }
-    return { message: 'Done' };
+    return ;
   };
   forgotPassword = async (body: IForgetPasswordBodyInputs) => {
     const { email, password, otp } = body;
 
-    const user: IUserDocument | null = await this.UserModel.findOne({
+    const user: UserDocument | null = await this.UserModel.findOne({
       filter: {
         email,
         provider: providerEnum.system,
@@ -353,7 +356,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('In-valid account');
     }
-    if (user.otp[0] &&! user.otp[0].code) {
+    if (user.otp[0] && !user.otp[0].code) {
       throw new NotFoundException(
         'In-valid login data or provider or email not confirmed',
       );

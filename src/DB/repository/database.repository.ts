@@ -9,7 +9,7 @@ import {
   UpdateQuery,
 } from 'mongoose';
 
-export  class DatabaseRepository<TDocument> {
+export class DatabaseRepository<TDocument> {
   constructor(protected readonly model: Model<TDocument>) {}
 
   async findOne({
@@ -77,7 +77,7 @@ export  class DatabaseRepository<TDocument> {
       option.skip = (page - 1) * option.limit;
       pages = Math.ceil(docCount / option.limit);
     }
-    let result = await this.find({ filter, option, select });
+    const result = await this.find({ filter, option, select });
 
     return { docCount, pages, limit: option.limit, currentPage: page, result };
   }
@@ -140,7 +140,7 @@ export  class DatabaseRepository<TDocument> {
     return this.model
       .findOneAndUpdate(filter, { ...data, $inc: { __v: 1 } }, option)
       .select(select)
-      .populate(populate);
+      .populate(populate).exec();
   }
   async findByIdAndUpdate({
     id,

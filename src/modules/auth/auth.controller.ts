@@ -1,47 +1,83 @@
-import { Body, Controller, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Patch,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 
+import { IResponse } from 'src/common/interfaces/respons.interface';
+import { successResponse } from 'src/common/utils/success.response';
 import { AuthService } from './auth.service';
-import { IConfirmEmailBodyInputs, IForgetPasswordBodyInputs, ILoginBodyInputs, ILoginByGmailBodyInputs, INewConfirmEmailBodyInputs, ISignupBodyInputs, ISignupByGmailBodyInputs, IVerifyConfirmEmailBodyInputs } from './dto/auth.dto';
+import {
+  IConfirmEmailBodyInputs,
+  IForgetPasswordBodyInputs,
+  ILoginBodyInputs,
+  ILoginByGmailBodyInputs,
+  INewConfirmEmailBodyInputs,
+  ISignupBodyInputs,
+  ISignupByGmailBodyInputs,
+  IVerifyConfirmEmailBodyInputs,
+} from './dto/auth.dto';
+import { LoginResponse } from './entities/auth.entity';
 
-@UsePipes(new ValidationPipe({stopAtFirstError:true,whitelist:true , forbidNonWhitelisted:true}))
+@UsePipes(
+  new ValidationPipe({
+    stopAtFirstError: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }),
+)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly Service: AuthService) {}
 
   @Post('signup')
-  signup(@Body() body: ISignupBodyInputs) {
-    return this.Service.signup(body);
+  async signup(@Body() body: ISignupBodyInputs) {
+    await this.Service.signup(body);
+    return successResponse();
   }
   @Post('signup/gmail')
-  signupByGmail(@Body() body: ISignupByGmailBodyInputs) {
-    return this.Service.signupByGmail(body);
+  async signupByGmail(@Body() body: ISignupByGmailBodyInputs) {
+    await this.Service.signupByGmail(body);
+    return successResponse();
   }
   @Post('login')
-  loginByGmail(@Body() body: ILoginBodyInputs) {
-    return this.Service.login(body);
+  async loginByGmail(
+    @Body() body: ILoginBodyInputs,
+  ): Promise<IResponse<LoginResponse>> {
+    const data = await this.Service.login(body);
+    return successResponse<LoginResponse>({ data });
   }
   @Post('/login/gmail')
-  login(@Body() body: ILoginByGmailBodyInputs) {
-    return this.Service.loginByGmail(body);
+  async login(@Body() body: ILoginByGmailBodyInputs) {
+    await this.Service.loginByGmail(body);
+    return successResponse();
   }
   @Patch('confirm-email')
-  confirmEmail(@Body() body: IConfirmEmailBodyInputs) {
-    return this.Service.confirmEmail(body);
+  async confirmEmail(@Body() body: IConfirmEmailBodyInputs) {
+    await this.Service.confirmEmail(body);
+    return successResponse();
   }
   @Patch('new-confirm-email')
-  newConfirmEmail(@Body() body: any) {
-    return this.Service.newConfirmEmail(body);
+  async newConfirmEmail(@Body() body: any) {
+    await this.Service.newConfirmEmail(body);
+    return successResponse();
   }
   @Patch('new-confirm-password-otp')
-  newConfirmPasswordOtp(@Body() body: INewConfirmEmailBodyInputs) {
-    return this.Service.newConfirmPassword(body);
+  async newConfirmPasswordOtp(@Body() body: INewConfirmEmailBodyInputs) {
+    await this.Service.newConfirmPassword(body);
+    return successResponse();
   }
   @Patch('forgot-password')
-  forgotPassword(@Body() body: IForgetPasswordBodyInputs) {
-    return this.Service.forgotPassword(body);
+  async forgotPassword(@Body() body: IForgetPasswordBodyInputs) {
+    await this.Service.forgotPassword(body);
+    return successResponse();
   }
   @Patch('verify-forgot-password')
-  verifyForgotPassword(@Body() body: IVerifyConfirmEmailBodyInputs) {
-    return this.Service.verifyForgotPassword(body);
+  async verifyForgotPassword(@Body() body: IVerifyConfirmEmailBodyInputs) {
+    await this.Service.verifyForgotPassword(body);
+    return successResponse();
   }
 }

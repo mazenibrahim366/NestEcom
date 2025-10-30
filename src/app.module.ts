@@ -8,14 +8,22 @@ import { UserModule } from './modules/user/user.module';
 import { OtpModel } from './DB/models/Otp.model';
 import { AuthenticationModule } from './modules/auth/auth.module';
 import { SharedAuthModule } from './common/modules/auth.module';
-
+import { S3Service } from './common/utils/multer/s3.service';
+import { BrandModule } from './modules/brand/brand.module';
 
 @Module({
-  imports: [ ConfigModule.forRoot({ envFilePath : resolve("./config/.env.development"),isGlobal: true }),
-    MongooseModule.forRoot(process.env.DB_URL as string ),
-  SharedAuthModule,AuthenticationModule,UserModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: resolve('./config/.env.development'),
+      isGlobal: true,
+    }),
+    MongooseModule.forRoot(process.env.DB_URL as string),
+    SharedAuthModule,
+    AuthenticationModule,
+    UserModule,
+    BrandModule
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,S3Service],
 })
 export class AppModule {}
-

@@ -2,7 +2,7 @@ import { customAlphabet } from 'nanoid';
 
 import { log } from 'console';
 
-import { IUserDocument } from '../../../DB/models/User.model';
+import { UserDocument } from '../../../DB/models/User.model';
 import { UserRepository } from '../../../DB/repository/user.repository';
 import { OtpEnum, providerEnum } from '../enums';
 
@@ -29,7 +29,7 @@ export class confirmEmailOtpService {
     email: string;
     subject?: string;
   }) => {
-    const user: IUserDocument | null = await this.UserModel.findOne({
+    const user: UserDocument | null = await this.UserModel.findOne({
       filter: {
         email,
         provider: providerEnum.system,

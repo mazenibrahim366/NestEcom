@@ -1,5 +1,5 @@
-import type { Document, Types } from 'mongoose'
-import mongoose from 'mongoose'
+import type { Document, Types } from 'mongoose';
+import mongoose from 'mongoose';
 import { genderEnum, providerEnum, roleEnum } from '../../common/utils/enums';
 export enum AllowCommentsEnum {
   allow = 'allow',

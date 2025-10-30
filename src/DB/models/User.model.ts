@@ -7,16 +7,22 @@ import {
   Virtual,
 } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
-import { genderEnum, LanguageEnum, providerEnum, roleEnum } from 'src/common/utils/enums';
+import {
+  genderEnum,
+  LanguageEnum,
+  providerEnum,
+  roleEnum,
+} from 'src/common/utils/enums';
 import { generateHash } from 'src/common/utils/security/hash.security';
-import { IOtpDocument } from './Otp.model';
+import { OtpDocument } from './Otp.model';
+import { IUser } from 'src/common/interfaces/user.interface';
 
 interface IUserVirtuals {
   fullName: string;
-    otp: IOtpDocument[];
+  otp: OtpDocument[];
 }
 
-export type IUserDocument = HydratedDocument<User> & IUserVirtuals;
+export type UserDocument = HydratedDocument<User> & IUserVirtuals;
 
 @Schema({
   timestamps: true,
@@ -24,7 +30,7 @@ export type IUserDocument = HydratedDocument<User> & IUserVirtuals;
   toObject: { virtuals: true },
   strictQuery: true, //pranoid
 })
-export class User {
+export class User implements IUser {
   @Prop({ required: true, minlength: 2, maxlength: 20 })
   firstName: string;
 
@@ -59,8 +65,6 @@ export class User {
 
   @Prop()
   phone?: string;
-
-
 
   @Prop({
     type: {
@@ -125,7 +129,7 @@ export class User {
   // confirmPasswordOtp?: string;
 
   @Virtual()
-  otp: IOtpDocument[];
+  otp: OtpDocument[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -139,18 +143,18 @@ UserSchema.virtual('otp', {
   foreignField: 'createdBy',
 });
 UserSchema.virtual('fullName')
-  .set(function (this: IUserDocument, value: string) {
+  .set(function (this: UserDocument, value: string) {
     const [firstName, lastName] = value?.split(' ');
     this.set({ firstName, lastName, slug: value.replaceAll(/\s+/g, '-') });
   })
-  .get(function (this: IUserDocument) {
+  .get(function (this: UserDocument) {
     return this.firstName + ' ' + this.lastName;
   });
 
 UserSchema.pre(
   'save',
   async function (
-    this: IUserDocument & {
+    this: UserDocument & {
       wasNew: boolean;
       confirmPasswordPlanOtp?: string | undefined;
     },
@@ -177,7 +181,7 @@ UserSchema.pre(
   },
 );
 // UserSchema.post('save', async function (doc, next) {
-//   const that = this as unknown as IUserDocument & {
+//   const that = this as unknown as UserDocument & {
 //     wasNew: boolean;
 //     confirmPasswordPlanOtp?: string | undefined;
 //   };
